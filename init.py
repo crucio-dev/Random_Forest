@@ -92,34 +92,39 @@ else:
     attacking_data_downsampled = attacking_data.sample(n=n_benign, random_state=1)
     balanced_data = pd.concat([benign_data, attacking_data_downsampled])
 
+# Check for infinite values and replace them if necessary
+balanced_data.replace([float('inf'), -float('inf')], pd.NA, inplace=True)
+balanced_data.dropna(inplace=True)
+
 # Shuffle the balanced dataset
 balanced_data = balanced_data.sample(frac=1, random_state=1).reset_index(drop=True)
 
 # Now you can proceed to split the balanced dataset into features and target
-# y = balanced_data['Label']
-# X = balanced_data[['Down/Up Ratio']]
+y = balanced_data['Label']
+X = balanced_data[['Flow Bytes/s', 'Flow Packets/s', 'SYN Flag Count', 'Total Fwd Packets', 'Total Backward Packets', 'Fwd Packet Length Mean', 'Fwd Packet Length Std', 
+                'Bwd Packet Length Mean', 'Bwd Packet Length Std', 'Flow Duration', 'RST Flag Count', 'Down/Up Ratio']]
 
 # Split the data into training and validation sets
-# train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
+train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
 
-# # # Print the sizes of the new balanced datasets
-# # print("Number of Benign packets in training set:", (train_y == 'Benign').sum())
-# # print("Number of Attacking packets in training set:", (train_y == 'Attacking').sum())
+# Print the sizes of the new balanced datasets
+print("Number of Benign packets in training set:", (train_y == 'Benign').sum())
+print("Number of Attacking packets in training set:", (train_y == 'Attacking').sum())
 
-# # Proceed to train your model as before
-# from sklearn.ensemble import RandomForestClassifier
+# Proceed to train your model as before
+from sklearn.ensemble import RandomForestClassifier
 
-# forest_model = RandomForestClassifier(random_state=1)
-# forest_model.fit(train_X, train_y)
+forest_model = RandomForestClassifier(random_state=1)
+forest_model.fit(train_X, train_y)
 
-# melb_preds = forest_model.predict(val_X)
+melb_preds = forest_model.predict(val_X)
 
-# # Make predictions and evaluate the model as before
-# accuracy = accuracy_score(val_y, melb_preds)
-# conf_matrix = confusion_matrix(val_y, melb_preds)
-# class_report = classification_report(val_y, melb_preds)
+# Make predictions and evaluate the model as before
+accuracy = accuracy_score(val_y, melb_preds)
+conf_matrix = confusion_matrix(val_y, melb_preds)
+class_report = classification_report(val_y, melb_preds)
 
-# # # Print results
-# print("Accuracy:", accuracy)
-# print("\nConfusion Matrix:\n", conf_matrix)
-# print("\nClassification Report:\n", class_report)
+# # Print results
+print("Accuracy:", accuracy)
+print("\nConfusion Matrix:\n", conf_matrix)
+print("\nClassification Report:\n", class_report)
