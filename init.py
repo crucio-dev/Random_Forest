@@ -96,31 +96,30 @@ else:
 balanced_data = balanced_data.sample(frac=1, random_state=1).reset_index(drop=True)
 
 # Now you can proceed to split the balanced dataset into features and target
-y = balanced_data['Label']
-X = balanced_data[['Fwd URG Flags', 'Bwd Packet Length Min', 'SYN Flag Count', 'Source Port', 'Fwd Packet Length Mean', 
-                  'Bwd Packet Length Mean', 'Fwd IAT Mean', 'Bwd IAT Mean']]
+# y = balanced_data['Label']
+# X = balanced_data[['Down/Up Ratio']]
 
 # Split the data into training and validation sets
-train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
+# train_X, val_X, train_y, val_y = train_test_split(X, y, random_state=0)
 
-# Print the sizes of the new balanced datasets
-print("Number of Benign packets in training set:", (train_y == 'Benign').sum())
-print("Number of Attacking packets in training set:", (train_y == 'Attacking').sum())
+# # # Print the sizes of the new balanced datasets
+# # print("Number of Benign packets in training set:", (train_y == 'Benign').sum())
+# # print("Number of Attacking packets in training set:", (train_y == 'Attacking').sum())
 
-# Proceed to train your model as before
-from sklearn.ensemble import RandomForestClassifier
+# # Proceed to train your model as before
+# from sklearn.ensemble import RandomForestClassifier
 
-forest_model = RandomForestClassifier(random_state=1)
-forest_model.fit(train_X, train_y)
+# forest_model = RandomForestClassifier(random_state=1)
+# forest_model.fit(train_X, train_y)
 
-melb_preds = forest_model.predict(val_X)
+# melb_preds = forest_model.predict(val_X)
 
-# Make predictions and evaluate the model as before
-accuracy = accuracy_score(val_y, melb_preds)
-conf_matrix = confusion_matrix(val_y, melb_preds)
-class_report = classification_report(val_y, melb_preds)
+# # Make predictions and evaluate the model as before
+# accuracy = accuracy_score(val_y, melb_preds)
+# conf_matrix = confusion_matrix(val_y, melb_preds)
+# class_report = classification_report(val_y, melb_preds)
 
-# # Print results
-print("Accuracy:", accuracy)
-print("\nConfusion Matrix:\n", conf_matrix)
-print("\nClassification Report:\n", class_report)
+# # # Print results
+# print("Accuracy:", accuracy)
+# print("\nConfusion Matrix:\n", conf_matrix)
+# print("\nClassification Report:\n", class_report)
