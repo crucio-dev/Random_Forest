@@ -79,7 +79,7 @@ def get_cleaned_data_files():
     """
     Get all cleaned data files in the cleaned_data directory.
     """
-    return glob.glob(os.path.join('cleaned_data', '*.csv'))
+    return glob.glob(os.path.join('cleaned_data', '*_cleaned.csv'))
 
 # save_common_columns_to_csv()
 

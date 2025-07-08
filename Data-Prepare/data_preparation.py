@@ -53,7 +53,7 @@ def remove_invalid_rows(prepared_data_files):
         df = pd.read_csv(file)
         initial_row_count = len(df)
 
-        # Replace invalid values and drop NaNs
+        # Replace invalid values and drop NaNs and infinite values
         df = df.replace([np.inf, -np.inf], np.nan).dropna()
 
         final_row_count = len(df)
@@ -82,13 +82,11 @@ def get_invalid_columns(prepared_data_files):
         print(f"Processing file: {file}")
         df = pd.read_csv(file)
         na_columns = df.columns[df.isna().any()].tolist()
-        inf_columns = df.columns[(df == np.inf).any()].tolist()
         
-        if na_columns or inf_columns:
+        if na_columns:
             invalid_columns[file] = {
                 'File': file,
                 'NA Columns': na_columns,
-                'Inf Columns': inf_columns
             }
     
     # Save the invalid columns to a CSV file
@@ -99,20 +97,23 @@ def get_invalid_columns(prepared_data_files):
 # get the total count of packet types from 'Label' column in each filtered file and save that to the csv file
 def get_packet_type_counts(cleaned_data_files):
     """
-    Get the count of each packet type from the 'Label' column in each cleaned file.
+    Get the total count of each packet type across all files.
     """
-    packet_type_counts = {}
-    
+    total_counts = {}
+
     for file in cleaned_data_files:
         print(f"Processing file: {file}")
         df = pd.read_csv(file)
-        counts = df['Label'].value_counts().to_dict()
-        packet_type_counts[file] = counts
-    
-    # Save the packet type counts to a CSV file
-    packet_type_counts_df = pd.DataFrame.from_dict(packet_type_counts, orient='index').fillna(0).astype(int)
-    packet_type_counts_df.to_csv('packet_type_counts.csv')
-    print("Packet type counts saved to packet_type_counts.csv")
+        counts = df['Label'].value_counts()
+        for packet_name, count in counts.items():
+            total_counts[packet_name] = total_counts.get(packet_name, 0) + count
+
+    # Convert to DataFrame for better readability or save directly
+    total_counts_df = pd.DataFrame(list(total_counts.items()), columns=['Packet Name', 'Total Count'])
+    total_counts_df.to_csv('total_packet_counts.csv', index=False)
+    print("Total packet counts saved to total_packet_counts.csv")
+
+
 
 
 # print(len(filtered_files), "filtered files found.")
@@ -123,4 +124,4 @@ def get_packet_type_counts(cleaned_data_files):
 # filter_files_to_common_columns(files, common_columns)
 # remove_invalid_rows(prepared_data_files)
 # get_invalid_columns(prepared_data_files)
-get_packet_type_counts(cleaned_data_files)
+# get_packet_type_counts(cleaned_data_files)
